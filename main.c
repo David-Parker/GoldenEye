@@ -16,7 +16,7 @@ MODULE_VERSION("0.01");
 void measure_interruptions(void*);
 
 int secondsToRun = 60;
-int g_cyclesThreshold = 10000;
+_u64 g_cyclesThreshold = 10000;
 _u64 g_cyclesPerSec = 0;
 
 module_param(secondsToRun, int, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
@@ -25,12 +25,11 @@ MODULE_PARM_DESC(secondsToRun, "Seconds to run GoldenEye.");
 void measure_interruptions(void* info)
 {
     int core = smp_processor_id();
-    _u64 now = ktime_get_real_ns();
-    _u64 end = now + ((_u64)secondsToRun * NANOS_PER_SEC);
     _u64 offset = 0;
     _u64 cyclesPerMicrosecond = g_cyclesPerSec / (_u64)1000000;
     _u64 lostMicros = 0;
     _u64 begin = 0;
+    _u64 end = 0;
     _u64 curr = 0;
     _u64 start = 0;
     _u64 last = 0;
@@ -39,6 +38,7 @@ void measure_interruptions(void* info)
     asm volatile("cli" :::); // disable interrupts
 
     begin = __rdtscp(&aux);
+    end = begin + ((_u64)secondsToRun * g_cyclesPerSec);
     start = begin;
     last = begin;
 
@@ -72,7 +72,7 @@ void measure_interruptions(void* info)
             }
         }
     }
-    while (ktime_get_real_ns() < end);
+    while (curr < end);
 
     asm volatile("sti" :::); // enable interrupts
 }
