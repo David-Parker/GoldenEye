@@ -4,6 +4,8 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/timekeeping.h>
+#include <linux/interrupt.h>
+#include <linux/irqflags.h>
 #include "cpufreq.h"
 #include "globaldef.h"
 #include "hostreporting.h"
@@ -13,14 +15,28 @@ MODULE_AUTHOR("David Parker");
 MODULE_DESCRIPTION("GoldenEye. Measures hypervisor overhead from within a VM.");
 MODULE_VERSION("0.01");
 
+void disable_interrupts(void);
+void enable_interrupts(void);
 void measure_interruptions(void*);
 
+static unsigned long flags = 0;
 int secondsToRun = 60;
 _u64 g_cyclesThreshold = 10000;
 _u64 g_cyclesPerSec = 0;
 
 module_param(secondsToRun, int, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
 MODULE_PARM_DESC(secondsToRun, "Seconds to run GoldenEye.");
+
+void disable_interrupts()
+{
+    local_irq_save(flags);
+    local_irq_disable();
+}
+
+void enable_interrupts()
+{
+     local_irq_restore(flags);
+}
 
 void measure_interruptions(void* info)
 {
@@ -35,7 +51,7 @@ void measure_interruptions(void* info)
     _u64 last = 0;
     _u32 aux = 0;
 
-    asm volatile("cli" :::); // disable interrupts
+    disable_interrupts();
 
     begin = __rdtscp(&aux);
     end = begin + ((_u64)secondsToRun * g_cyclesPerSec);
@@ -74,7 +90,7 @@ void measure_interruptions(void* info)
     }
     while (curr < end);
 
-    asm volatile("sti" :::); // enable interrupts
+    enable_interrupts();
 }
 
 static int __init goldeneye_init(void) {
