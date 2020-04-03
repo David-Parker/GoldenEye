@@ -83,7 +83,7 @@ void measure_interruptions(void* info)
             // Only report skips larger than 10us
             if (lostMicros >= 10)
             {
-                printk(KERN_INFO "core %d: Lost time: %llu", core, lostMicros);
+                // printk(KERN_INFO "core %d: Lost time: %llu", core, lostMicros); // for debugging
                 ReportInterruptionToHost(lostMicros, core);
             }
         }
