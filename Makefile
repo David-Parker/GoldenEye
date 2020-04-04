@@ -11,4 +11,4 @@ test:
 	sudo dmesg -C
 	sudo insmod goldeneye.ko secondsToRun=1
 	sudo rmmod goldeneye.ko
-	dmesg
+	dmesg | grep "GoldenEye"

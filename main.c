@@ -41,6 +41,9 @@ void enable_interrupts()
 void measure_interruptions(void* info)
 {
     int core = smp_processor_id();
+
+    printk(KERN_INFO "GoldenEye: running on core %d", core);
+
     _u64 offset = 0;
     _u64 cyclesPerMicrosecond = g_cyclesPerSec / (_u64)1000000;
     _u64 lostMicros = 0;
