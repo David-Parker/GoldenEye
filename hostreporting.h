@@ -2,10 +2,8 @@
 #include "globaldef.h"
 
 void call_cpuid(
-    unsigned int* eax,
-    unsigned int* ebx,
-    unsigned int* ecx,
-    unsigned int* edx);
+    unsigned int eax,
+    unsigned int ecx);
 
 void ReportInterruptionToHost(
     _u64 lost,

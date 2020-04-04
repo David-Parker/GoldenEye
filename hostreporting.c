@@ -3,19 +3,15 @@
 #include "hostreporting.h"
 
 __always_inline void call_cpuid(
-    unsigned int* eax,
-    unsigned int* ebx,
-    unsigned int* ecx,
-    unsigned int* edx)
+    unsigned int eax,
+    unsigned int ecx)
 {
     asm volatile(
         "cpuid"
-        : "=a" (*eax),
-        "=b" (*ebx),
-        "=c" (*ecx),
-        "=d" (*edx)
-        : "0" (*eax),
-        "2" (*ecx));
+        :   "=a" (eax),
+            "=c" (ecx)
+        :   "0" (eax),
+            "2" (ecx));
 }
 
 __always_inline void ReportInterruptionToHost(
@@ -23,13 +19,9 @@ __always_inline void ReportInterruptionToHost(
     int cpu)
 {
     unsigned int eax = (unsigned int)(0xF0000000 | (unsigned int)cpu);
-    unsigned int ebx = 0;
     unsigned int ecx = (unsigned int)lost;
-    unsigned int edx = 0;
 
     call_cpuid(
-        &eax,
-        &ebx,
-        &ecx,
-        &edx);
+        eax,
+        ecx);
 }

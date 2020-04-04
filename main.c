@@ -44,7 +44,6 @@ void measure_interruptions(void* info)
 
     printk(KERN_INFO "GoldenEye: running on core %d", core);
 
-    _u64 offset = 0;
     _u64 cyclesPerMicrosecond = g_cyclesPerSec / (_u64)1000000;
     _u64 lostMicros = 0;
     _u64 begin = 0;
@@ -65,16 +64,12 @@ void measure_interruptions(void* info)
 
         lostMicros = (curr - last) / cyclesPerMicrosecond;
 
-        if (lostMicros > 0)
+        if (lostMicros > 5)
         {
-            // printk(KERN_INFO "GoldenEye: core %d: Lost time: %llu us", core, lostMicros); // for debugging
             ReportInterruptionToHost(lostMicros, core);
-            last = __rdtsc();
         }
-        else
-        {
-            last = curr;
-        }
+        
+        last = curr;
     }
     while (curr < end);
 
