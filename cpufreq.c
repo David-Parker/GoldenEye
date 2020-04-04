@@ -1,10 +1,16 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/timekeeping.h>
+#include <linux/cpufreq.h>
 
 #include "cpufreq.h"
 
 _u64 get_cycles_per_second()
+{
+    return tsc_khz * 1000;
+}
+
+_u64 get_cycles_per_second_measured()
 {
     _u64 cyclesPerSec = 0;
     _u64 gap = 0;

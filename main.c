@@ -6,6 +6,7 @@
 #include <linux/timekeeping.h>
 #include <linux/interrupt.h>
 #include <linux/irqflags.h>
+
 #include "cpufreq.h"
 #include "globaldef.h"
 #include "hostreporting.h"
@@ -21,7 +22,6 @@ void measure_interruptions(void*);
 
 static unsigned long flags = 0;
 int secondsToRun = 60;
-_u64 g_cyclesThreshold = 10000;
 _u64 g_cyclesPerSec = 0;
 
 module_param(secondsToRun, int, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
@@ -63,31 +63,25 @@ void measure_interruptions(void* info)
     do {
         curr = __rdtsc();
 
-        if (last + g_cyclesThreshold > curr)
+        offset = curr - last;
+
+        if (offset > cyclesPerMicrosecond)
         {
-            last = curr;
-        }
-        else // We exceeded 10,000 cycles
-        { 
-            offset = 0;
-
-            if (curr >= last)
-            {
-                offset = curr - last;
-            }
-
-            start = curr;
-            last = curr;
-
             // offset is in tsc clock cycles
             lostMicros = offset / cyclesPerMicrosecond;
 
-            // Only report skips larger than 10us
-            if (lostMicros >= 10)
+            // Only report skips larger than 1us
+            if (lostMicros > 0)
             {
-                // printk(KERN_INFO "GoldenEye: core %d: Lost time: %llu", core, lostMicros); // for debugging
+                // printk(KERN_INFO "GoldenEye: core %d: Lost time: %llu us", core, lostMicros); // for debugging
                 ReportInterruptionToHost(lostMicros, core);
             }
+
+            last = __rdtsc();
+        }
+        else
+        {
+            last = curr;
         }
     }
     while (curr < end);
