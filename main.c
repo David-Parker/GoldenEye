@@ -12,7 +12,7 @@
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("David Parker");
-MODULE_DESCRIPTION("GoldenEye. Measures hypervisor overhead from within a VM.");
+MODULE_DESCRIPTION("GoldenEye. Measures hypervisor overhead from within a VM. Based on deschedule written by Steve Deng.");
 MODULE_VERSION("0.01");
 
 void disable_interrupts(void);
@@ -49,17 +49,16 @@ void measure_interruptions(void* info)
     _u64 curr = 0;
     _u64 start = 0;
     _u64 last = 0;
-    _u32 aux = 0;
 
     disable_interrupts();
 
-    begin = __rdtscp(&aux);
+    begin = __rdtsc();
     end = begin + ((_u64)secondsToRun * g_cyclesPerSec);
     start = begin;
     last = begin;
 
     do {
-        curr = __rdtscp(&aux);
+        curr = __rdtsc();
 
         if (last + g_cyclesThreshold > curr)
         {
@@ -83,7 +82,7 @@ void measure_interruptions(void* info)
             // Only report skips larger than 10us
             if (lostMicros >= 10)
             {
-                // printk(KERN_INFO "core %d: Lost time: %llu", core, lostMicros); // for debugging
+                // printk(KERN_INFO "GoldenEye: core %d: Lost time: %llu", core, lostMicros); // for debugging
                 ReportInterruptionToHost(lostMicros, core);
             }
         }
@@ -94,10 +93,10 @@ void measure_interruptions(void* info)
 }
 
 static int __init goldeneye_init(void) {
-    printk(KERN_INFO "Starting GoldenEye for %d second(s).\n", secondsToRun);
+    printk(KERN_INFO "GoldenEye: Starting GoldenEye for %d second(s).\n", secondsToRun);
 
     g_cyclesPerSec = get_cycles_per_second();
-    printk(KERN_INFO "Cpu frequency: %llu", g_cyclesPerSec);
+    printk(KERN_INFO "GoldenEye: Cpu frequency: %llu", g_cyclesPerSec);
 
     on_each_cpu(measure_interruptions, NULL, 1);
 
@@ -105,7 +104,7 @@ static int __init goldeneye_init(void) {
 }
 
 static void __exit goldeneye_exit(void) {
-    printk(KERN_INFO "Completed GoldenEye.\n");
+    printk(KERN_INFO "GoldenEye: Completed GoldenEye.\n");
 }
 
 module_init(goldeneye_init);

@@ -6,7 +6,6 @@
 
 _u64 get_cycles_per_second()
 {
-    _u32 aux;
     _u64 cyclesPerSec = 0;
     _u64 gap = 0;
     _u32 index;
@@ -19,20 +18,20 @@ _u64 get_cycles_per_second()
 
     for (index = 0; index < 3; index += 1)
     {
-        tsc0 = __rdtscp(&aux);
+        tsc0 = __rdtsc();
         time = ktime_get_real_ns();
 
         do {
             time1 = ktime_get_real_ns();
         } while (time1 == time);
 
-        tsc1 = __rdtscp(&aux);
+        tsc1 = __rdtsc();
 
         do {
             time2 = ktime_get_real_ns();
         } while (time2 - time1 < 1 * NANOS_PER_SEC);
 
-        tsc2 = __rdtscp(&aux);
+        tsc2 = __rdtsc();
 
         if ((gap == 0) ||
             ((tsc2 > tsc1) && (tsc2 - tsc0 < gap))) {
