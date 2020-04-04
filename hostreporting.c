@@ -4,12 +4,18 @@
 
 __always_inline void call_cpuid(
     unsigned int eax,
-    unsigned int ecx)
+    unsigned int ecx,
+    unsigned int ebx,
+    unsigned int edx)
 {
     asm volatile(
         "cpuid"
-        :   "=a" (eax),
-            "=c" (ecx));
+        : "=a" (eax),
+        "=b" (ebx),
+        "=c" (ecx),
+        "=d" (edx)
+        : "0" (eax),
+        "2" (ecx));
 }
 
 __always_inline void ReportInterruptionToHost(
@@ -21,5 +27,7 @@ __always_inline void ReportInterruptionToHost(
 
     call_cpuid(
         eax,
-        ecx);
+        ecx,
+        0,
+        0);
 }
