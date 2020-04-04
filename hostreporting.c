@@ -2,7 +2,7 @@
 #include <linux/kernel.h>
 #include "hostreporting.h"
 
-void call_cpuid(
+__always_inline void call_cpuid(
     unsigned int* eax,
     unsigned int* ebx,
     unsigned int* ecx,
@@ -18,7 +18,7 @@ void call_cpuid(
         "2" (*ecx));
 }
 
-void ReportInterruptionToHost(
+__always_inline void ReportInterruptionToHost(
     _u64 lost,
     int cpu)
 {

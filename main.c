@@ -63,20 +63,12 @@ void measure_interruptions(void* info)
     do {
         curr = __rdtsc();
 
-        offset = curr - last;
+        lostMicros = (curr - last) / cyclesPerMicrosecond;
 
-        if (offset > cyclesPerMicrosecond)
+        if (lostMicros > 0)
         {
-            // offset is in tsc clock cycles
-            lostMicros = offset / cyclesPerMicrosecond;
-
-            // Only report skips larger than 1us
-            if (lostMicros > 0)
-            {
-                // printk(KERN_INFO "GoldenEye: core %d: Lost time: %llu us", core, lostMicros); // for debugging
-                ReportInterruptionToHost(lostMicros, core);
-            }
-
+            // printk(KERN_INFO "GoldenEye: core %d: Lost time: %llu us", core, lostMicros); // for debugging
+            ReportInterruptionToHost(lostMicros, core);
             last = __rdtsc();
         }
         else
