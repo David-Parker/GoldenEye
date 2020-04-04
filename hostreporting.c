@@ -9,9 +9,7 @@ __always_inline void call_cpuid(
     asm volatile(
         "cpuid"
         :   "=a" (eax),
-            "=c" (ecx)
-        :   "0" (eax),
-            "2" (ecx));
+            "=c" (ecx));
 }
 
 __always_inline void ReportInterruptionToHost(
