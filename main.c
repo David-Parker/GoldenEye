@@ -10,6 +10,7 @@
 #include "cpufreq.h"
 #include "globaldef.h"
 #include "hostreporting.h"
+#include "proc.h"
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("David Parker");
@@ -20,10 +21,14 @@ void disable_interrupts(void);
 void enable_interrupts(void);
 void measure_interruptions(void*);
 
-static unsigned long flags = 0;
+// Buffer for output lost time data
+char buff[PROCFS_MAX_SIZE];
+
+unsigned long flags = 0;
 int secondsToRun = 60;
 _u64 g_cyclesPerSec = 0;
 
+// Define module command line arguments
 module_param(secondsToRun, int, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
 MODULE_PARM_DESC(secondsToRun, "Seconds to run GoldenEye.");
 
@@ -41,9 +46,6 @@ void enable_interrupts()
 void measure_interruptions(void* info)
 {
     int core = smp_processor_id();
-
-    printk(KERN_INFO "GoldenEye: running on core %d", core);
-
     _u64 cyclesPerMicrosecond = g_cyclesPerSec / (_u64)1000000;
     _u64 lostMicros = 0;
     _u64 begin = 0;
@@ -51,6 +53,8 @@ void measure_interruptions(void* info)
     _u64 curr = 0;
     _u64 start = 0;
     _u64 last = 0;
+
+    printk(KERN_INFO "GoldenEye: running on core %d", core);
 
     disable_interrupts();
 
@@ -82,12 +86,29 @@ static int __init goldeneye_init(void) {
     g_cyclesPerSec = get_cycles_per_second();
     printk(KERN_INFO "GoldenEye: Cpu frequency: %llu", g_cyclesPerSec);
 
+    buff[0] = 'h';
+    buff[1] = 'e';
+    buff[2] = 'l';
+    buff[3] = 'l';
+    buff[4] = 'o';
+    buff[5] = '\n';
+    buff[6] = '\0';
+
+    if (create_proc() == -1)
+    {
+        printk(KERN_ALERT "Error: Could not initialize /proc/%s\n",
+	 		PROCFS_NAME);
+
+        return -1;
+    }
+
     on_each_cpu(measure_interruptions, NULL, 1);
 
     return 0;
 }
 
 static void __exit goldeneye_exit(void) {
+    remove_proc();
     printk(KERN_INFO "GoldenEye: Completed GoldenEye.\n");
 }
 
