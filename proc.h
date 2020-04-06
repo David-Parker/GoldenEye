@@ -2,11 +2,12 @@
 
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
+#include "losttime.h"
 
 #define PROCFS_MAX_SIZE		1024
 #define PROCFS_NAME 		"goldeneye"
 
-extern char buff[1024];
+extern struct LostTimes lostTimes;
 
 int create_proc(void);
 void remove_proc(void);
