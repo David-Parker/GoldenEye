@@ -15,7 +15,7 @@
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("David Parker");
-MODULE_DESCRIPTION("GoldenEye. Measures hypervisor overhead from within a VM. Based on deschedule written by Steve Deng.");
+MODULE_DESCRIPTION("GoldenEye. Measures hypervisor overhead from within a VM. Idea based on deschedule written by Steve Deng. Source path: os\\src\\vm\\test\\perf\\deschedule");
 MODULE_VERSION("0.01");
 
 void disable_interrupts(void);
@@ -25,7 +25,6 @@ void measure_interruptions(void*);
 #define MAX_RES_MICROS 10
 
 // Buffer for output lost time data
-char buff[PROCFS_MAX_SIZE];
 struct LostTimes lostTimes = {};
 
 unsigned long flags = 0;
