@@ -1,5 +1,6 @@
 obj-m += goldeneye.o
 goldeneye-objs += main.o cpufreq.o hostreporting.o proc.o losttime.o
+ccflags-y := -O2
 
 all:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules

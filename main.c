@@ -22,7 +22,7 @@ void disable_interrupts(void);
 void enable_interrupts(void);
 void measure_interruptions(void*);
 
-#define MAX_RES_MICROS 10
+#define MAX_RES_MICROS 1
 
 // Buffer for output lost time data
 struct LostTimes lostTimes = {};
