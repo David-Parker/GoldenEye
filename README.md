@@ -21,32 +21,32 @@ How to use (tested on Debian/Ubuntu 18.04+ based distros):
 6) Examine contents of goldeneye.json. This file is in the following JSON format:
 ```json
 {
-    "Version": 5, // The current version of the JSON schema
-    "Cores": 4, // Total number of cpu processors
-    "SecondsToRun": 10, // Total number of seconds to run GoldenEye
-    "StartTime": 1655876137938306409, // Timestamp of run start time (ktime_get_real_ns)
-    "TscFrequency": 3491914000, // Frequency in hz of the time stamp clock (TSC for x86 and CNTVCT for aarch64)
-    "Timeline": // Timeline of the measured data
-    [
-        {
-            "Core": 0, // Processor number
-            "TscOverhead": 34, // Overhead of the rdtsc instruction in clock cycles
-            "Drift": 0, // Number of cycles that the TSC was detected going backwards (should be 0 unless there is a HW bug)
-            "LostTimes": [ // Each line represents the accumulated TSC gaps (of size >=1us), in microseconds, for each second in the run
-                100,
-                ...
-            ]
-        },
+  "Version": 5, // The current version of the JSON schema
+  "Cores": 4, // Total number of cpu processors
+  "SecondsToRun": 10, // Total number of seconds to run GoldenEye
+  "StartTime": 1655876137938306409, // Timestamp of run start time (ktime_get_real_ns)
+  "TscFrequency": 3491914000, // Frequency in hz of the time stamp clock (TSC for x86 and CNTVCT for aarch64)
+  "Timeline": // Timeline of the measured data
+  [
+    {
+      "Core": 0, // Processor number
+      "TscOverhead": 34, // Overhead of the rdtsc instruction in clock cycles
+      "Drift": 0, // Number of cycles that the TSC was detected going backwards (should be 0 unless there is a HW bug)
+      "LostTimes": [ // Each line represents the accumulated TSC gaps (of size >=1us), in microseconds, for each second in the run
+        100,
         ...
-    ],
-    "Histogram":  // Histogram of the distribution of individual TSC gaps during the run, in buckets of powers of 2
-    [
-        {
-            "Bin": "1us",
-            "Count": 100,
-            "Sum": 100
-        },
-        ...
-    ]
+      ]
+    },
+    ...
+  ],
+  "Histogram": // Histogram of the distribution of individual TSC gaps during the run, in buckets of powers of 2
+  [
+    {
+      "Bin": "1us",
+      "Count": 100,
+      "Sum": 100
+    },
+    ...
+  ]
 }
 ```
