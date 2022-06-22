@@ -1,3 +1,4 @@
+# Overview
 `GoldenEye` is a tool to detect missing CPU cycles. It works in a similar way to ftrace's hwlat_detector (https://docs.kernel.org/trace/hwlat_detector.html). It currently supports x86_64 and aarch64 (ARM64) architectures.
 
 1) On bare metal hardware this usually means detecting and quantifying SMIs.
@@ -10,9 +11,10 @@ Sums per second for each processor, as well as histogram distributuons of gap si
 /proc/goldeneye
 ```
 
-<b>WARNING</b>: GoldenEye will occupy all processors while in operation and will starve your kernel. Please do not run this tool unless you are aware of the risks associated.
-
-How to use (tested on Debian/Ubuntu 18.04+ based distros):
+<b>WARNING</b>: GoldenEye will occupy all processors while in operation and will starve your kernel. Please do not run this tool unless you are aware of the associated risks.
+<br><br>
+# How to use
+Tested on Debian/Ubuntu 18.04+ based distros:
 1) git clone GoldenEye.git
 2) Ensure required GNU compilation toolchain is installed on your machine. "sudo apt-get install build-essential" should be sufficient.
 3) In git directory, build GoldenEye against your machine's Linux headers with "make".
@@ -50,3 +52,6 @@ How to use (tested on Debian/Ubuntu 18.04+ based distros):
   ]
 }
 ```
+<br><br>
+# License
+`GoldenEye` is dual licensed under GPL 2.0 & MIT. Refer to the LICENSES folder for details.
