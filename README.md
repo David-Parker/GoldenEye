@@ -5,7 +5,7 @@
 2) On virtual machines this will measure, with a high precision, CPU steal time.
 
 `GoldenEye` runs as a ring-0 Linux Kernel Module. It runs a routine on each processor with interrupts disabled. This routine spins in a tight loop querying the TSC register and looking for gaps of at least 1us.
-Sums per second for each processor, as well as histogram distributuons of gap sizes are buffered into memory. Once complete, this buffer is serialized into a json file and is available via 
+Sums per second for each processor, as well as histogram distributions of gap sizes are buffered into memory. Once complete, this buffer is serialized into a json file and is available via 
 
 ```
 /proc/goldeneye
