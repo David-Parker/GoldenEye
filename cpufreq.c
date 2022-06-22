@@ -1,14 +1,14 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
-#include <linux/timekeeping.h>
-#include <linux/cpufreq.h>
 
 #include "cpufreq.h"
+#include "util.h"
 
-_u64 get_cycles_per_second()
-{
-    return tsc_khz * 1000;
-}
+#if defined(__x86_64__)
+#include "arch/x64/cpufreq.c"
+#elif defined(__aarch64__)
+#include "arch/ARM64/cpufreq.c"
+#endif
 
 _u64 get_cycles_per_second_measured()
 {
@@ -24,23 +24,28 @@ _u64 get_cycles_per_second_measured()
 
     for (index = 0; index < 3; index += 1)
     {
-        tsc0 = __rdtsc();
+        tsc0 = _rdtsc_();
         time = ktime_get_real_ns();
 
-        do {
+        do 
+        {
             time1 = ktime_get_real_ns();
-        } while (time1 == time);
+        } 
+        while (time1 == time);
 
-        tsc1 = __rdtsc();
+        tsc1 = _rdtsc_();
 
-        do {
+        do 
+        {
             time2 = ktime_get_real_ns();
-        } while (time2 - time1 < 1 * NANOS_PER_SEC);
+        } 
+        while (time2 - time1 < 1 * NANOS_PER_SEC);
 
-        tsc2 = __rdtsc();
+        tsc2 = _rdtsc_();
 
         if ((gap == 0) ||
-            ((tsc2 > tsc1) && (tsc2 - tsc0 < gap))) {
+            ((tsc2 > tsc1) && (tsc2 - tsc0 < gap))) 
+        {
 
             gap = tsc2 - tsc0;
             cyclesPerSec = (tsc2 - tsc1) * (_u64)(NANOS_PER_SEC) / (time2 - time1);
